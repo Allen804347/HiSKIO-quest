@@ -12,7 +12,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "nuxt": "^2.0.0"
+    "nuxt": "^2.0.0",
+    "@nuxtjs/auth": "^4.8.1",
+    "@nuxtjs/axios": "^5.3.6",
+    "vuex": "^3.1.1"
   },
   "devDependencies": {
     "@vue/test-utils": "^1.0.0-beta.27",

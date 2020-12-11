@@ -1,39 +1,52 @@
 <template>
   <div class="container">
     <div>
-      <logo />
-      <h1 class="title">
-        HiSKIO-quest
-      </h1>
-      <h2 class="subtitle">
-        A test project
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
+      <span>account</span>
+      <input v-model="account" />
     </div>
+    <br>
+    <div>
+      <span>password</span>
+      <input v-model="password" type="password"/>
+    </div>
+    <br>
+    <input type="submit" @click="submit"/>
   </div>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
+import { login } from '@/services/auth'
 
 export default {
-  components: {
-    Logo
+  middleware: ['checkIsLogin'],
+  data () {
+    return {
+      account: 'account',
+      password: 'password'
+    }
+  },
+  methods: {
+    async submit() {
+      let res
+      try {
+        res = await login(this.$axios, { account: this.account, password: this.password})
+        if (res.status !== 200) {
+          alert('login fail')
+          return
+        }
+        // login success
+      } catch (err) {
+        alert('http request error')
+        return
+      }
+      if (res.data) {
+        const now = new Date();
+        const time = now.getTime();
+        res.data.expires_in = time + (7 * 24 * 60 * 60 * 1000);
+        this.$auth.$storage.setCookie('authUser', res.data)
+        window.location = '/account'
+      }
+    }
   }
 }
 </script>
@@ -43,30 +56,9 @@ export default {
   margin: 0 auto;
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-}
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
 }
 </style>
